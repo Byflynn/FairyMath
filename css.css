@@ -1,0 +1,752 @@
+/* Общие стили */
+:root {
+    /* Немного затемнённая палитра: снижена общая яркость */
+    --primary-color: #156fbf; /* чуть темнее основной синий */
+    --primary-light: #2a85d6;
+    --text-dark: #2a3b4a; /* основной текст остаётся читаемым */
+    --text-light: #ffffff;
+    --background: #e9f2fb; /* чуть более прохладный/тьмный фон */
+    --card-bg: #f6f9fc;
+    --shadow-color: rgba(30, 144, 255, 0.08);
+}
+
+/* Тёмная тема временно отключена (переключатель удалён) */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Фоновые настройки (плотность, цвета, анимация) */
+:root {
+    --pattern-color: rgba(30, 144, 255, 0.06);
+    --star-color: rgba(255, 215, 0, 0.20);
+    --symbol-color: rgba(100, 149, 237, 0.12);
+    --twinkle-duration: 12s; /* скорость мерцания */
+    --pattern-size-1: 220px; /* звезды / крупный */
+    --pattern-size-2: 160px; /* звезды / средний */
+    --pattern-size-3: 120px; /* звезды / мелкий */
+}
+
+body {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    /* основной фон: более спокойный градиент */
+    background: linear-gradient(135deg, 
+        var(--background) 0%, 
+        rgba(220, 232, 244, 0.92) 50%,
+        var(--background) 100%
+    );
+    background-attachment: fixed;
+    position: relative;
+    color: var(--text-dark);
+}
+
+/* Фоновые узоры: звёзды, книжные полосы и математические символы */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        /* Звёзды разных размеров */
+        radial-gradient(circle at 40px 40px, var(--star-color) 2px, transparent 3px),
+        radial-gradient(circle at 140px 120px, var(--star-color) 1.5px, transparent 2px),
+        radial-gradient(circle at 260px 60px, var(--star-color) 1px, transparent 2px),
+        radial-gradient(circle at 420px 220px, var(--star-color) 1.2px, transparent 2px),
+        /* Книжные полосы (имитация стопки книг) */
+        linear-gradient(45deg, transparent 48%, var(--pattern-color) 49%, var(--pattern-color) 51%, transparent 52%),
+        /* Мелкие символы/точки для текстуры */
+        radial-gradient(circle at 100px 220px, var(--symbol-color) 3px, transparent 4px),
+        radial-gradient(circle at 200px 320px, var(--symbol-color) 2px, transparent 3px);
+    background-size: 
+        var(--pattern-size-1) var(--pattern-size-1),
+        var(--pattern-size-2) var(--pattern-size-2),
+        var(--pattern-size-3) var(--pattern-size-3),
+        140px 140px,
+        360px 360px,
+        300px 300px;
+    opacity: 0.68;
+    pointer-events: none;
+    z-index: -2;
+    animation: twinkling var(--twinkle-duration) infinite linear;
+}
+
+/* Слой с математическими символами: =, ÷ и √ (стилизованно) */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        /* "=" две линии */
+        linear-gradient(to bottom, transparent 45%, var(--symbol-color) 46%, var(--symbol-color) 48%, transparent 49%),
+        linear-gradient(to bottom, transparent 55%, var(--symbol-color) 56%, var(--symbol-color) 58%, transparent 59%),
+        /* "÷" — точка, линия, точка (комбинация) */
+        radial-gradient(circle at 20% 20%, var(--symbol-color) 3px, transparent 4px),
+        linear-gradient(to right, transparent 48%, var(--symbol-color) 49%, var(--symbol-color) 51%, transparent 52%),
+        radial-gradient(circle at 20% 80%, var(--symbol-color) 3px, transparent 4px),
+        /* "√" — диагональная линия (стилизованно) */
+        linear-gradient(20deg, transparent 46%, var(--symbol-color) 47%, var(--symbol-color) 49%, transparent 50%);
+    background-size: 140px 140px, 140px 140px, 360px 360px, 120px 120px, 360px 360px, 220px 220px;
+    background-position: 10% 20%, 40% 60%, 70% 20%, 30% 40%, 60% 70%, 85% 40%;
+    opacity: 0.32;
+    pointer-events: none;
+    z-index: -2;
+}
+
+/* Плавающие SVG-иконки на фоне (компас, карандаш, книги, символы) */
+.floating-svgs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* не мешают кликам */
+    z-index: -1; /* между основным содержимым и фон-паттернами */
+}
+
+.floating-svgs .svg-icon {
+    position: absolute;
+    width: 84px;
+    height: auto;
+    opacity: 0.12;
+    transform-origin: center center;
+    will-change: transform, opacity;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06));
+}
+
+.svg-compass { top: 8%; left: 6%; width: 92px; opacity: 0.14; }
+.svg-compass { animation: rotate-compass 18s linear infinite; }
+
+.svg-pencil { top: 68%; left: 10%; width: 72px; opacity: 0.11; }
+.svg-pencil { animation: swing-pencil 6s ease-in-out infinite; }
+
+.svg-books { top: 26%; right: 6%; width: 110px; opacity: 0.10; }
+.svg-books { animation: bob-books 5.2s ease-in-out infinite; }
+
+.svg-symbol { width: 40px; opacity: 0.09; }
+.svg-pi { top: 44%; left: 52%; }
+.svg-sum { top: 58%; left: 72%; }
+.svg-sqrt { top: 34%; left: 34%; }
+
+@keyframes rotate-compass {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes swing-pencil {
+    0% { transform: rotate(-8deg) translateY(0); }
+    50% { transform: rotate(8deg) translateY(-6px); }
+    100% { transform: rotate(-8deg) translateY(0); }
+}
+
+@keyframes bob-books {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes pop-symbol {
+    0% { opacity: 0.06; transform: scale(.98); }
+    50% { opacity: 0.14; transform: scale(1.06); }
+    100% { opacity: 0.06; transform: scale(.98); }
+}
+
+/* Лёгкий цикл для символов */
+.svg-symbol { animation: pop-symbol 9s ease-in-out infinite; }
+
+/* Скрывать на мобильных чтобы не загромождать экран */
+@media (max-width: 720px) {
+    .floating-svgs { display: none; }
+}
+
+/* Прелоадер (короткая заставка с вращающимся π) */
+#preloader.preloader {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(8,30,80,0.86), rgba(12,40,90,0.86));
+    z-index: 10050; /* выше навигации и overlay */
+    pointer-events: all;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+#preloader .preloader-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.preloader-pi {
+    width: 88px;
+    height: 88px;
+    transform-origin: 50% 50%;
+    animation: spin-pi 1.2s linear infinite;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45));
+}
+
+@keyframes spin-pi {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.preloader-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Если хотим плавный масштаб при исчезании */
+.preloader-fadeout {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
+/* Анимация мерцания звёзд */
+@keyframes twinkling {
+    0% { opacity: 0.55; }
+    50% { opacity: 0.75; }
+    100% { opacity: 0.55; }
+}
+
+h1, h2, h3, h4, .logo {
+    font-family: 'Rubik', 'Arial', sans-serif;
+    font-weight: 500;
+}
+
+/* Стили для навигации */
+.navbar {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.navbar.hide {
+    transform: translateY(-100%);
+}
+
+.logo {
+    color: var(--text-light);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    margin-left: auto;
+}
+
+/* Кнопка переключения темы */
+/* Стили переключателя темы удалены */
+
+.nav-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    position: relative;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Вкладки (tabs) */
+.tabs {
+    display: flex;
+    gap: 0.9rem;
+    justify-content: center;
+    align-items: center;
+    padding: 1.15rem 1rem 0.6rem;
+    margin-top: 78px; /* отступ чтобы не перекрывать fixed navbar */
+}
+.tab-btn {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dark);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 0.8rem 1.2rem; /* чуть крупнее */
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(12,63,122,0.06);
+    transition: background 0.18s ease, transform 0.12s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+.tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(12,63,122,0.10);
+}
+.tab-btn[aria-selected="true"], .tab-btn.active {
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    color: var(--text-light);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 34px rgba(12,63,122,0.20);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Панели контента вкладок: плавное появление/схлопывание */
+.tab-panel {
+    max-height: 0; /* скрыта */
+    opacity: 0;
+    transform: translateY(10px);
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(.2,.9,.2,1), opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+}
+.tab-panel.active {
+    max-height: 3000px; /* достаточно для содержимого */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Небольшая адаптивная правка: вкладки занимают ширину */
+@media (max-width: 720px) {
+    .tabs { gap: .4rem; padding-top: 66px; }
+    .tab-btn { padding: .6rem .9rem; font-size: 1rem; }
+}
+
+.nav-menu a::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--text-light);
+    transition: all 0.2s ease;
+    transform: translateX(-50%);
+}
+
+.nav-menu a:hover::before {
+    width: 80%;
+}
+
+.nav-menu a:hover,
+.nav-menu a:active {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+}
+
+.nav-menu a:focus-visible {
+    outline: 3px solid rgba(255,255,255,0.28);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+
+/* Удалены стили для гамбургер-меню */
+
+
+main {
+    margin-top: 80px;
+    padding: 20px;
+    position: relative;
+    background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(240, 248, 255, 0.85) 100%
+    );
+    min-height: calc(100vh - 80px);
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+/* Стили для медиа (видео, PDF) */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.responsive-media {
+    width: 100%;
+    height: auto;
+    max-height: 480px;
+    display: block;
+}
+
+.pdf-wrapper iframe {
+    width: 100%;
+    height: 640px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 600px) {
+    .pdf-wrapper iframe {
+        height: 420px;
+    }
+}
+
+/* Мини-превью для карточек (PDF + видео) */
+.mini-media {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.mini-pdf iframe {
+    width: 320px;
+    height: 200px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.mini-video video {
+    width: 320px;
+    height: 200px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 720px) {
+    .mini-pdf iframe,
+    .mini-video video {
+        width: 100%;
+        height: auto;
+        max-height: 320px;
+    }
+    .mini-media {
+        gap: .6rem;
+    }
+}
+
+.card {
+    /* Используем переменную --card-bg чтобы тема могла изменять фон карточек */
+    background: var(--card-bg, #ffffff);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    color: var(--text-light);
+}
+
+/* Специальный тёмно-синий фон для карточек в секциях Ертегілер, Мультфильмдер, Геймбуктар */
+#ertegiler .card,
+#multfilmder .card,
+#gamebooks .card {
+    background: linear-gradient(180deg, rgba(8,44,88,0.96), rgba(16,86,150,0.92));
+    box-shadow: 0 10px 36px rgba(3, 16, 48, 0.52);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: var(--text-light);
+}
+
+#ertegiler .card h3,
+#multfilmder .card h3,
+#gamebooks .card h3 {
+    color: var(--text-light);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px var(--shadow-color);
+}
+
+.card h3 {
+    color: var(--text-light);
+    margin-bottom: 1.2rem;
+    font-size: 1.25rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.card h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--primary-light);
+    border-radius: 2px;
+}
+
+/* Полноразмерное видео и PDF в карточках */
+.video-full {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.pdf-container {
+    position: relative;
+    width: 100%;
+    margin-top: 1rem;
+    background: #fff;
+}
+
+.pdf-container .fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.pdf-container .fullscreen-btn:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+}
+
+.pdf-container .fullscreen-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: #1e90ff;
+}
+
+.pdf-full {
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+/* Анимация для полноэкранного режима */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zoomOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pdf-container.fullscreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95vw;
+    height: 95vh;
+    z-index: 9999;
+    padding: 20px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+}
+
+/* Анимация для контейнера PDF */
+.pdf-container {
+    transition: all 0.3s ease;
+}
+
+.pdf-container:not(.fullscreen) {
+    transform: none;
+    position: relative;
+}
+
+.pdf-container.fullscreen .pdf-full {
+    width: 95%;
+    height: 95%;
+    max-width: 1400px;
+    margin: auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.pdf-container.fullscreen .pdf-full {
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    opacity: 0;
+}
+
+.pdf-container:hover .fullscreen-btn {
+    opacity: 1;
+}
+
+.fullscreen-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.pdf-container.fullscreen .fullscreen-btn {
+    top: 20px;
+    right: 20px;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .video-full {
+        height: 300px;
+    }
+    .pdf-full {
+        height: 400px;
+    }
+}
+
+/* Подвал */
+footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 64px;
+        flex-direction: column;
+        background: #1e90ff; /* тот же голубой */
+        width: 100%;
+        text-align: center;
+        padding: 16px 0;
+        gap: 8px;
+        box-shadow: 0 6px 18px rgba(30,144,255,0.12);
+        transition: transform 200ms ease, opacity 200ms ease;
+        transform-origin: top;
+        opacity: 0;
+        transform: scaleY(0.98);
+    }
+
+    .nav-menu.active {
+        display: flex;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    .hamburger {
+        display: inline-flex;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+}
+html, body {
+    position: relative;
+    z-index: 0;
+}
+
+body::before,
+body::after {
+    z-index: 0; /* раньше было -1 */
+}
+
+main, .navbar, footer {
+    position: relative;
+    z-index: 1; /* чтобы контент был поверх фона */
+}
+html {
+  scroll-behavior: smooth;
+}
+
