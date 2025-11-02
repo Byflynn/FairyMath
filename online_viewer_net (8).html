@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Интерактивті Ертегі: Аяз би және Сандар елі</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background:#f3f4f6; margin:0; padding:18px; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .storybook-container { width:100%; max-width:980px; height:88vh; max-height:840px; box-shadow:0 16px 48px rgba(0,0,0,0.12); border-radius:14px; overflow:hidden; border:1px solid #e6e9ef; background:#fff; display:flex; flex-direction:column; }
+    .story-image { width:100%; height:56%; min-height:320px; background-size:cover; background-position:center; background-repeat:no-repeat; position:relative; display:flex; align-items:center; justify-content:center; }
+    .image-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.28), rgba(0,0,0,0.03)); pointer-events:none; }
+    #image-placeholder { position:absolute; color:#fff; font-weight:600; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+    .content { padding:20px; display:flex; flex-direction:column; justify-content:space-between; flex:1; }
+    .story-text { color:#1f2937; text-align:center; font-size:1.05rem; line-height:1.6; }
+    .math-box { background: rgba(255,255,255,0.95); display:inline-block; padding:8px 10px; border-radius:8px; margin-top:10px; }
+    .answer-btn { transition: transform .12s ease, box-shadow .12s ease; }
+    .answer-btn:active { transform: translateY(1px); }
+    .nav-button { transition: transform .12s ease, box-shadow .12s ease; }
+    .nav-button:hover:not(:disabled){ transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .feedback { font-weight:700; font-size:1rem; color:#dc2626; margin-top:8px; text-align:center; }
+    .controls { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
+    .page-indicator { color:#374151; font-weight:600; }
+    .hidden { display:none !important; }
+    @media (max-width:680px){ .story-image{ height:50%; min-height:220px; } .story-text{ font-size:0.98rem; } }
+  </style>
+</head>
+<body>
+
+  <div class="storybook-container">
+    <div id="story-image" class="story-image" style="background:#e5e7eb">
+      <div id="image-placeholder">Сурет жүктелуде...</div>
+      <div class="image-overlay"></div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div id="story-text" class="story-text"></div>
+
+        <div id="answer-buttons" class="mt-4 flex flex-wrap justify-center gap-3 hidden"></div>
+        <div id="feedback" class="feedback hidden">Қайта ойланып көр! 🤔</div>
+      </div>
+
+      <div class="controls">
+        <button id="prev-button" class="nav-button bg-indigo-600 text-white font-bold py-3 px-5 rounded-lg">← Артқа</button>
+        <div class="page-indicator"><span id="current-page">1</span> / <span id="total-pages">1</span></div>
+        <button id="next-button" class="nav-button bg-indigo-600 text-white font-bold py-3 px-5 rounded-lg">Алға →</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ---------------------------
+   Story pages (texts kept)
+   --------------------------- */
+
+const pageTexts = [
+  /* 1 */ `Математика елі деген ғажайып бір ел болыпты. Бұл елдің адамдары сандармен сөйлесіп, есеппен ойлай білетін дана халық екен. Сол елді Мадан хан деген әділ, бірақ сыншыл билеуші басқарыпты. Оның қасында қырық уәзірі бар екен, бірақ көбінің жүрегін қызғаныш пен тәкаппарлық билеген.`,
+  /* 2 */ `Бір күні хан елді аралап келе жатып, жыртық тоны мен тері тымағы бар бір жас жігітті кездестіреді. Жігіт өзін Жаман деп таныстырады. Бірақ оның сөздері терең, ойы ұшқыр еді. Хан Жаманның ақылына тәнті болып, сарайға шақырады.`,
+  /* 3 */ `Сол күні хан Жаманды сынамақ болады.<br><br><b>1-сынақ.</b> Процент есебі — Егін өнімін есептеу.<br><br>Хан: «Уа, Жаман! Биыл біз 2000 тонна астық жинадық. Бұл өткен жылғыдан 25% артық. Айтшы, өткен жылы қанша тонна астық жиналды?»`,
+  /* 4 */ `Жаман сәл ойланып: 'Өткен жылы 1600 тонна астық жиналған, тақсыр', – деп дұрыс жауап береді.<br><br><div class="math-box">2000 / 1.25 = 1600 т</div>`,
+  /* 5 */ `Қызғаншақ уәзірлер ханға: 'Жаманды Барсакелмес аралына жіберіңіз!' – деп айдатады. Хан келісіп, жаңа сынақ қояды.`,
+  /* 6 */ `Хан: 'Барсакелмеске дейін 450 км. Бірінші күні 90 км, әр келесі күні алдыңғыдан 10% аз жүрсең, неше күнде жетесің?'`,
+  /* 7 */ `Жаман алтыншы күні аралға жетіп, аман-есен оралады. Хан таң қалады, уәзірлердің үні өшеді.`,
+  /* 8 */ `Ханның үшінші сынағы: 'Қазынада 120 000 алтын бар. ¼ бөлігін кедейлерге, қалғанның 2/5 бөлігін сарай жөндеуге жұмсадым. Қанша қалды?'`,
+  /* 9 */ `Жаман есептейді: 'Қазынада 54 000 алтын қалды, тақсыр.'<br><br><div class="math-box">120000×1/4=30000; (120000-30000)×2/5=36000; 90000-36000=54000</div><br>Хан риза болып, Жаманды 'Аяз би' деп атайды.`,
+  /*10 */ `Бір күні 'Күміс өзеннің' көпірі қирайды. Аяз би 100 км жерден ағаш әкелуге аттанады. 'Күніне жолдың 25%-ын жүрсем, төрт күнде жетемін,' – дейді ол. Сіз Аяз бидің жоспарын тиімді деп ойлайсыз ба?`,
+  /*11 */ `Орманда сөйлейтін емен: 'Биіктігім 40 м, соның 1/5 бөлігін кес,' – дейді. Аяз би 8 метр ағаш кесіп алады. Бұл шешімді дұрыс деп ойлайсыз ба?`,
+  /*12 */ `Жолда ағаштың 20%-ы су болып, 6.4 метрі қалады. Осы ағашпен көпірді салып, елді аман сақтап қалады. Мұндай ерлікке 'ия' деп келісесіз бе?`,
+  /*13 */ `Мадан хан Аяз_bidі хан тағына отырғызады. Аяз би сарайға ескі тонын іліп: 'Баймын деп аспа, ханмын деп таспа!' – деп өзіне ескерту жасапты.`
+];
+
+/* Put your generated illustration file paths here in order. */
+const pageImages = [
+  "./A_2D_digital_illustration_in_a_vibrant,_cartoonish.png",
+  "./illustrations/page2.png",
+  "./illustrations/page3.png",
+  "./illustrations/page4.png",
+  "./illustrations/page5.png",
+  "./illustrations/page6.png",
+  "./illustrations/page7.png",
+  "./illustrations/page8.png",
+  "./illustrations/page9.png",
+  "./illustrations/page10.png",
+  "./illustrations/page11.png",
+  "./illustrations/page12.png",
+  "./illustrations/page13.png"
+];
+
+/* Question pages mapping (0-based indexes)
+   UPDATED: page index 5 correct answer is now "7 күн" */
+const questionPages = {
+  2: { options: [1600,1800,3200], correct: 1600, next: 3 },
+  5: { options: ["5 күн","6 күн","7 күн"], correct: "7 күн", next: 6 },
+  7: { options: [54000,45000,52000], correct: 54000, next: 8 },
+  9: { options: ["ия","жоқ"], correct: "ия", next: 10 },
+  10:{ options: ["ия","жоқ"], correct: "ия", next: 11 },
+  11:{ options: ["ия","жоқ"], correct: "ия", next: 12 }
+};
+
+/* UI elements & state */
+let currentPageIndex = 0;
+const storyImage = document.getElementById('story-image');
+const imagePlaceholder = document.getElementById('image-placeholder');
+const storyText = document.getElementById('story-text');
+const prevButton = document.getElementById('prev-button');
+const nextButton = document.getElementById('next-button');
+const currentPageElem = document.getElementById('current-page');
+const totalPagesElem = document.getElementById('total-pages');
+const answerButtons = document.getElementById('answer-buttons');
+const feedback = document.getElementById('feedback');
+
+/* Tone.js sounds */
+const sounds = {
+  calculating: () => { const s = new Tone.MembraneSynth().toDestination(); const n = Tone.now(); s.triggerAttackRelease("C2","8n", n); s.triggerAttackRelease("C2","8n", n+0.18); },
+  success:    () => { const s = new Tone.Synth().toDestination(); s.triggerAttackRelease("C5","8n", Tone.now()); s.triggerAttackRelease("E5","8n", Tone.now()+0.08); },
+  wrong:      () => { const s = new Tone.Synth().toDestination(); s.triggerAttackRelease("G2","8n", Tone.now()); },
+  royal_fanfare: () => { const s = new Tone.PolySynth(Tone.Synth).toDestination(); s.triggerAttackRelease(["C4","E4","G4"], "4n", Tone.now()); },
+  whisper:    () => { const n = new Tone.Noise("white").start(); const f = new Tone.AutoFilter("4n").toDestination().start(); n.connect(f); setTimeout(()=>{ n.stop(); f.stop(); },900); },
+  applause:   () => { const n = new Tone.Noise("pink").start(); const f = new Tone.AutoFilter({frequency:"2n", baseFrequency:400}).toDestination().start(); n.connect(f); setTimeout(()=>{ n.stop(); f.stop(); },1100); },
+  river_flow: () => { const n = new Tone.Noise("pink").start(); const f = new Tone.AutoFilter("2n").toDestination().start(); n.connect(f); setTimeout(()=>{ n.stop(); f.stop(); },1200); },
+  magic_chime: () => { const s = new Tone.FMSynth().toDestination(); s.triggerAttackRelease("C6","4n", Tone.now()); },
+  construction: () => { const k = new Tone.MembraneSynth().toDestination(); const n=Tone.now(); k.triggerAttackRelease("C3","8n", n); k.triggerAttackRelease("G2","8n", n+0.25); },
+  final_fanfare: () => { const s = new Tone.PolySynth(Tone.Synth).toDestination(); s.triggerAttackRelease(["C4","E4","G4"], "4n", Tone.now()); s.triggerAttackRelease(["F4","A4","C5"], "4n", Tone.now()+0.6); }
+};
+function playSound(name){ Tone.start(); if(sounds[name]) sounds[name](); }
+
+/* Helper: load image with fallback to Unsplash cartoon query if local file missing */
+function resolveImagePath(index){
+  const p = pageImages[index];
+  return p;
+}
+
+function updateUI(){
+  const text = pageTexts[currentPageIndex];
+  storyText.innerHTML = text;
+
+  // set image (try local file from pageImages; onerror fallback to Unsplash)
+  imagePlaceholder.style.display = 'block';
+  imagePlaceholder.textContent = 'Сурет жүктелуде...';
+  const desired = resolveImagePath(currentPageIndex);
+  const img = new Image();
+  img.onload = () => {
+    storyImage.style.backgroundImage = `url('${desired}')`;
+    imagePlaceholder.style.display = 'none';
+  };
+  img.onerror = () => {
+    const terms = [
+      "cartoon,village,landscape","cartoon,king,palace","cartoon,farm,harvest","cartoon,celebration,children",
+      "cartoon,counselors,whisper","cartoon,desert,journey","cartoon,island,arrival","cartoon,treasure,chest",
+      "cartoon,prince,award","cartoon,bridge,river","cartoon,forest,magic","cartoon,wood,bridge","cartoon,throne,ceremony"
+    ];
+    const fallback = `https://source.unsplash.com/1200x800/?${terms[currentPageIndex] || "cartoon"}`;
+    const img2 = new Image();
+    img2.onload = () => {
+      storyImage.style.backgroundImage = `url('${fallback}')`;
+      imagePlaceholder.style.display = 'none';
+    };
+    img2.onerror = () => {
+      storyImage.style.backgroundImage = '';
+      imagePlaceholder.textContent = 'Суретті жүктеу мүмкін болмады';
+      imagePlaceholder.style.display = 'block';
+    };
+    img2.src = fallback;
+  };
+  img.src = desired;
+
+  // nav / indicator
+  currentPageElem.textContent = currentPageIndex + 1;
+  totalPagesElem.textContent = pageTexts.length;
+  prevButton.disabled = currentPageIndex === 0;
+  nextButton.disabled = currentPageIndex === pageTexts.length - 1;
+
+  // reset answers area
+  answerButtons.innerHTML = '';
+  answerButtons.classList.add('hidden');
+  feedback.classList.add('hidden');
+
+  // show question options if this page is a question
+  const q = questionPages[currentPageIndex];
+  if(q){
+    answerButtons.classList.remove('hidden');
+    nextButton.disabled = true;
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn py-2 px-4 bg-blue-600 text-white rounded-lg font-semibold';
+      btn.textContent = String(opt);
+      btn.onclick = () => {
+        const chosen = opt;
+        const correct = q.correct;
+        const bothNumbers = (typeof chosen === 'number' && typeof correct === 'number') ||
+                            (!isNaN(Number(chosen)) && !isNaN(Number(correct)));
+        const isCorrect = bothNumbers ? Number(chosen) === Number(correct) : String(chosen) === String(correct);
+        if(isCorrect){
+          playSound('success');
+          feedback.classList.add('hidden');
+          setTimeout(()=>{ currentPageIndex = q.next; updateUI(); }, 200);
+        } else {
+          playSound('wrong');
+          feedback.textContent = 'Қайта ойланып көр! 🤔';
+          feedback.classList.remove('hidden');
+        }
+      };
+      answerButtons.appendChild(btn);
+    });
+  }
+
+  // play page relevant sound (light)
+  const soundMap = {
+    0: 'royal_fanfare', 1: 'royal_fanfare', 2:'calculating', 3:'success', 4:'whisper',
+    5:'calculating', 6:'success', 7:'calculating', 8:'applause', 9:'river_flow', 10:'magic_chime', 11:'construction', 12:'final_fanfare'
+  };
+  const sname = soundMap[currentPageIndex];
+  if(sname) playSound(sname);
+}
+
+/* nav handlers */
+prevButton.addEventListener('click', ()=>{ if(currentPageIndex>0){ currentPageIndex--; updateUI(); }});
+nextButton.addEventListener('click', ()=>{ if(currentPageIndex<pageTexts.length-1){ currentPageIndex++; updateUI(); }});
+
+/* init */
+window.addEventListener('load', ()=>{ totalPagesElem.textContent = pageTexts.length; updateUI(); });
+
+</script>
+</body>
+</html>
