@@ -44,6 +44,15 @@ body {
 
 /* Фоновые узоры: звёзды, книжные полосы и математические символы */
 /* Новый фон с изображением */
+body {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    min-height: 100vh;
+    background: transparent;
+    overflow-x: hidden;
+}
+
 body::before {
     content: '';
     position: fixed;
@@ -890,6 +899,7 @@ main, .content {
     max-width: 900px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
+
 
 
 
