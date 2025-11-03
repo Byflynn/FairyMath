@@ -880,6 +880,15 @@ html {
         opacity: 0.4;
     }
 }
+main, .content {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 900px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
 
 
 
