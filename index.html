@@ -41,16 +41,22 @@
             <button class="tab-btn" id="tab-gamebooks" role="tab" aria-controls="gamebooks" aria-selected="false" data-target="gamebooks">Геймбук</button>
         </div>
     <section id="ertegiler" class="section tab-panel active" role="tabpanel" aria-labelledby="tab-ertegiler" aria-hidden="false">
-            <h2>Ертегі</h2>
-            <div class="content">
-                <div class="card">
-                    <div class="pdf-container">
-                        <iframe class="pdf-full" src="Azya_bi_synak_el.pdf.pdf" title="PDF ертегі"></iframe>
-                        <button class="fullscreen-btn" aria-label="Толық экранға шығару">
-                            <svg viewBox="0 0 24 24" width="24" height="24">
-                                <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                            </svg>
-                             <!-- Второй PDF -->
+          <h2>Ертегі</h2>
+<div class="content">
+
+    <!-- Первый PDF -->
+    <div class="card">
+        <div class="pdf-container">
+            <iframe class="pdf-full" src="Azya_bi_synak_el.pdf.pdf" title="PDF ертегі 1"></iframe>
+            <button class="fullscreen-btn" aria-label="Толық экранға шығару">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Второй PDF -->
     <div class="card">
         <div class="pdf-container">
             <iframe class="pdf-full" src="gemini.pdf" title="PDF ертегі 2"></iframe>
@@ -59,11 +65,10 @@
                     <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
                 </svg>
             </button>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
+    </div>
+
+</div>
 
     <section id="multfilmder" class="section tab-panel" role="tabpanel" aria-labelledby="tab-multfilmder" aria-hidden="true">
             <h2>Мультфильм</h2>
@@ -150,6 +155,7 @@
 </body>
 
 </html>
+
 
 
 
